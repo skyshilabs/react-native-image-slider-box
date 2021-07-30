@@ -3,10 +3,10 @@ import {
   View,
   Image,
   ActivityIndicator,
-  TouchableHighlight,
-  Dimensions
+  TouchableOpacity,
+  Dimensions,
+  Text
 } from "react-native";
-import YoutubePlayer from "react-native-youtube-iframe";
 
 import Carousel, { Pagination } from "react-native-snap-carousel"; //Thank From distributer(s) of this lib
 import styles from "./SliderBox.style";
@@ -28,6 +28,7 @@ import styles from "./SliderBox.style";
 // resizeMode
 // ImageComponentStyle,
 // imageLoadingColor = "#E91E63"
+// descriptions
 
 const width = Dimensions.get("window").width;
 
@@ -67,12 +68,9 @@ export class SliderBox extends Component {
       disableOnPress,
       resizeMethod,
       resizeMode,
-      imageLoadingColor = "#E91E63"
+      imageLoadingColor = "#E91E63",
+      descriptions
     } = this.props;
-
-    const isYoutube = item !== null ? item.includes('https://www.youtube.com/watch?') : false
-    const youtubeID = isYoutube ? item.replace('https://www.youtube.com/watch?v=', '') : null
-
     return (
       <View
         style={{
@@ -80,44 +78,42 @@ export class SliderBox extends Component {
           justifyContent: "center"
         }}
       >
-        {youtubeID !== null ?
-          <View style={{ marginTop: 60 }}>
-            <YoutubePlayer
-              height={200}
-              play={false}
-              videoId={youtubeID}
-              onChangeState={() => {}}
-            />
-          </View>
-          :
-          <TouchableHighlight
-            key={index}
-            onPress={() => !disableOnPress && this.onCurrentImagePressedHandler()}
-          >
-            <ImageComponent
-              style={[
-                {
-                  width: "100%",
-                  height: sliderBoxHeight || 200,
-                  alignSelf: "center"
-                },
-                ImageComponentStyle
-              ]}
-              source={typeof item === "string" ? { uri: item } : item}
-              resizeMethod={resizeMethod || "resize"}
-              resizeMode={resizeMode || "cover"}
-              onLoad={() => {}}
-              onLoadStart={() => {}}
-              onLoadEnd={() => {
-                let t = this.state.loading;
-                t[index] = true;
-                this.setState({ loading: t });
-              }}
-              {...this.props}
-            />
-          </TouchableHighlight>
-        }
-        {!this.state.loading[index] && !isYoutube && (
+        <TouchableOpacity
+          key={index}
+          onPress={() => !disableOnPress && this.onCurrentImagePressedHandler()}
+        >
+          <ImageComponent
+            style={[
+              {
+                width: "100%",
+                height: sliderBoxHeight || 200,
+                alignSelf: "center"
+              },
+              ImageComponentStyle
+            ]}
+            source={typeof item === "string" ? { uri: item } : item}
+            resizeMethod={resizeMethod || "resize"}
+            resizeMode={resizeMode || "cover"}
+            onLoad={() => {}}
+            onLoadStart={() => {}}
+            onLoadEnd={() => {
+              let t = this.state.loading;
+              t[index] = true;
+              this.setState({ loading: t });
+            }}
+            {...this.props}
+          />
+        </TouchableOpacity>
+        {descriptions && descriptions.length > index && (
+          <Text style={{
+            fontFamily: 'Inter-SemiBold',
+            fontSize: 14,
+            color: '#121212',
+            width: '85%',
+            marginLeft: 20
+          }}>{descriptions[index]}</Text>
+        )}
+        {!this.state.loading[index] && (
           <ActivityIndicator
             size="large"
             color={imageLoadingColor}
