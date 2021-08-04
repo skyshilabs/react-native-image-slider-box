@@ -5,7 +5,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
-  Text
+  Text,
+  Linking
 } from "react-native";
 
 import Carousel, { Pagination } from "react-native-snap-carousel"; //Thank From distributer(s) of this lib
@@ -29,6 +30,7 @@ import styles from "./SliderBox.style";
 // ImageComponentStyle,
 // imageLoadingColor = "#E91E63"
 // descriptions
+// items
 
 const width = Dimensions.get("window").width;
 
@@ -69,7 +71,8 @@ export class SliderBox extends Component {
       resizeMethod,
       resizeMode,
       imageLoadingColor = "#E91E63",
-      descriptions
+      descriptions,
+      items
     } = this.props;
     return (
       <View
@@ -80,7 +83,12 @@ export class SliderBox extends Component {
       >
         <TouchableOpacity
           key={index}
-          onPress={() => !disableOnPress && this.onCurrentImagePressedHandler()}
+          onPress={() => {
+            !disableOnPress && this.onCurrentImagePressedHandler()
+            if (items && items.length > index) {
+              Linking.openURL(items[index].url)
+            }
+          }}
         >
           <ImageComponent
             style={[
@@ -112,6 +120,15 @@ export class SliderBox extends Component {
             width: '85%',
             marginLeft: 20
           }}>{descriptions[index]}</Text>
+        )}
+        {items && items.length > index && (
+          <Text style={{
+            fontFamily: 'Inter-SemiBold',
+            fontSize: 14,
+            color: '#121212',
+            width: '85%',
+            marginLeft: 20
+          }}>{items[index].description}</Text>
         )}
         {!this.state.loading[index] && (
           <ActivityIndicator
